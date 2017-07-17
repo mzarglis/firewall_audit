@@ -136,7 +136,7 @@ def parser():
     )
 
     args = parser.parse_args()
-
+    list = [args.source_host,args.source_net,args.source_obj]
     # Must Have one and only 1 source option
     if args.source_host is None and args.source_net is None and args.source_obj is None:
         parser.error('One Source Option required (-sh -sn -so)')
@@ -155,20 +155,20 @@ def parser():
         sys.exit(-1)
 
     # Must have one and only 1 dest option
-    if args.dest_host is None and args.est_net is None and args.est_obj is None:
-        parser.error('One Source Option required (-sh -sn -so)')
+    if args.dest_host is None and args.dest_net is None and args.dest_obj is None:
+        parser.error('One Dest Option required (-sh -sn -so)')
         sys.exit(-1)
     if args.dest_host is None and args.dest_net is not None and args.dest_obj is not None:
-        parser.error('Only One Source Option Can be specified')
+        parser.error('Only One Dest Option Can be specified')
         sys.exit(-1)
     if args.dest_host is not None and args.dest_net is not None and args.dest_obj is None:
-        parser.error('Only One Source Option Can be specified')
+        parser.error('Only One Dest Option Can be specified')
         sys.exit(-1)
     if args.dest_host is not None and args.dest_net is None and args.dest_obj is not None:
-        parser.error('Only One Source Option Can be specified')
+        parser.error('Only One Dest Option Can be specified')
         sys.exit(-1)
     if args.dest_host is not None and args.dest_net is not None and args.dest_obj is not None:
-        parser.error('Only One Source Option Can be specified')
+        parser.error('Only One Dest Option Can be specified')
         sys.exit(-1)
 
 
@@ -185,19 +185,13 @@ ARGS = parser()
 
 def main():
 
-    if ARGS.source_host:
-        print('a')
-    else:
-        print('b')
+    a = None
+    b = None
+    c = None
+    list = [a,b,c]
 
-    if ARGS.source_net:
-        print('aa')
-    else:
-        print('bb')
-    print(ARGS.source_net)
-    print(ARGS.source_obj)
-
-
+    x = sum(x is None for x in list)
+    print(x)
 
 
 main()

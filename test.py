@@ -1,17 +1,16 @@
-import argparse
-import os
-import re
-import sys
-import ipaddress
 
+
+import sys
+import argparse
 
 def parser():
+
     parser = argparse.ArgumentParser(
         description="Search firewall configs for certain rules"
     )
     parser.add_argument(
         '-p',
-        '--p',
+        '--path',
         dest='path',
         type=str,
         required=True,
@@ -20,7 +19,7 @@ def parser():
 
     parser.add_argument(
         '-a',
-        '--a',
+        '--acl-name',
         dest='acl_name',
         type=str,
         required=False,
@@ -31,7 +30,7 @@ def parser():
 
     parser.add_argument(
         '-x',
-        '--x',
+        '--permission',
         dest='permission',
         choices=['permit','deny','either'],
         type=str,
@@ -44,7 +43,7 @@ def parser():
 
     parser.add_argument(
         '-t',
-        '--t',
+        '--trans-protocol',
         dest='trans_proto',
         choices=['tcp', 'udp', 'icmp','ip','any'],
         type=str,
@@ -136,121 +135,70 @@ def parser():
         help="destination port (default any)"
     )
 
-    if not (ARGS.source_host or ARGS.source_net or ARGS.source_obj):
-        parser.error('One Source Option required -sh or -sn or -so')
-        parser.print_help()
-        sys.exit(0)
-    if not (ARGS.dest_host or ARGS.dest_net or ARGS.dest_obj):
-        parser.error('One Destination Option required -dh or -dn or -do')
-        parser.print_help()
-        sys.exit(0)
+    args = parser.parse_args()
+
+    # Must Have one and only 1 source option
+    if args.source_host is None and args.source_net is None and args.source_obj is None:
+        parser.error('One Source Option required (-sh -sn -so)')
+        sys.exit(-1)
+    if args.source_host is None and args.source_net is not None and args.source_obj is not None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+    if args.source_host is not None and args.source_net is not None and args.source_obj is None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+    if args.source_host is not None and args.source_net is None and args.source_obj is not None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+    if args.source_host is not None and args.source_net is not None and args.source_obj is not None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+
+    # Must have one and only 1 dest option
+    if args.dest_host is None and args.est_net is None and args.est_obj is None:
+        parser.error('One Source Option required (-sh -sn -so)')
+        sys.exit(-1)
+    if args.dest_host is None and args.dest_net is not None and args.dest_obj is not None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+    if args.dest_host is not None and args.dest_net is not None and args.dest_obj is None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+    if args.dest_host is not None and args.dest_net is None and args.dest_obj is not None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
+    if args.dest_host is not None and args.dest_net is not None and args.dest_obj is not None:
+        parser.error('Only One Source Option Can be specified')
+        sys.exit(-1)
 
 
 
-    return parser.parse_args()
+
+    return args
+
+
 
 ARGS = parser()
 
 
 
-# iterates through all config files and finds which ones are firewalls
-# returns dictionary of firewalls
-def find_firewalls(path):
-    dict = {}
-    for filename in os.listdir(path):
-        if filename.endswith(".cfg"):
-            with open(os.path.join(path, filename)) as file:
-                for line in file:
-                    if "hostname fw" in line:
-                        dict[str(filename)] = [line.rstrip().replace('hostname ', '')]
-
-    return dict
-
-
-def ip_valid(ip):
-    if ip == 'any':
-        return False
-    else:
-        try:
-            ipaddress.ip_address(ip)
-            print("source ip valid")
-            return True
-        except ValueError:
-            print("source ip invalid")
-            return False
-        except Exception as e:
-            print(e)
-
-
-
-def network_valid(network):
-    if network == 'any':
-        return False
-    try:
-        ipaddress.ip_network(network)
-        print("source ip valid")
-        return True
-    except ValueError:
-        print("source ip invalid")
-        return False
-    except Exception as e:
-        print(e)
-
-
-
-def make_search_pattern():
-
-    #acl name pattern
-    if ARGS.acl_name == 'all':
-        re_name = '[\w]*\s'
-    else:
-        re_name = ARGS.acl_name + " "
-
-    #permit deny pattern
-    if ARGS.permission == 'permit ':
-        re_permission = ARGS.permission
-    elif ARGS.permission == 'deny ':
-        re_permission = ARGS.permission
-    else:
-        re_permission = '(permit|deny)\s'
-
-    #Transport protocol pattern
-    if ARGS.trans_proto == 'any':
-        re_trans_proto = '(tcp|ip|icmp|udp)\s'
-    else:
-        re_trans_proto = ARGS.trans_protol
-
-    #source ip pattern
-    if ARGS.source == 'any':
-        re_source = ARGS.source_ip
-
-
-
-
-
-
-
-
-
-
-    pattern = 'access-list ' + re_name + 'extended ' + re_permission + re_trans_proto + re_source
-
-    return True
-
 
 def main():
 
+    if ARGS.source_host:
+        print('a')
+    else:
+        print('b')
+
+    if ARGS.source_net:
+        print('aa')
+    else:
+        print('bb')
+    print(ARGS.source_net)
+    print(ARGS.source_obj)
 
 
-    print( find_firewalls(ARGS.path))
 
 
-
-
-
-
-if __name__ == '__main__':
-    main()
-
-
+main()
 
